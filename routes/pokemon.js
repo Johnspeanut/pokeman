@@ -3,13 +3,13 @@ const express = require('express');
 const route = express.Router();
 
 const pokemons = [
-    {name: "Pikachu", health: 100},
-    {name: "Dinosaur", health: 50},
-    {name: "Bob", health: 25},
+    { name: "Pikachu", health: 100 },
+    { name: "Dinosaur", health: 50 },
+    { name: "Bob", health: 25 },
 ];
 
 // '/pokemon' + '/'
-route.get('/', function(request, response) {
+route.get('/', function (request, response) {
 
     const nameLength = request.query.maxNameLength;
 
@@ -26,14 +26,14 @@ route.get('/', function(request, response) {
 
     response.status(200);
 
-    return response.send(pokemons); 
+    return response.send(pokemons);
 })
 
-route.post('/', function(request, response) {
+route.post('/', function (request, response) {
 
     const name = request.body.name;
 
-    if(!name) return response.send(401);
+    if (!name) return response.send(401);
 
     const newPokemon = {
         name: name,
@@ -45,8 +45,40 @@ route.post('/', function(request, response) {
     return response.send(200);
 })
 
+// Delete item based on item's name
+route.delete('/', function (request, response) {
+    const name = request.query.name;
+
+    if (!name) return response.send(401);
+
+    let newpokemons = pokemons.filter(function (element) { return element.name != name; });
+
+    response.status(200);
+
+    return response.send(newpokemons);
+})
+
+// Update item based on item's name and health
+route.put('/', function (request, response) {
+    const name = request.query.name;
+    const newHealth = request.query.health;
+
+    if (!name || !newHealth) return response.send(401);
+
+    for (let item of pokemons) {
+        if (item.name === name) {
+            item.health = newHealth;
+        }
+    }
+
+    response.status(200);
+
+    return response.send(pokemons);
+})
+
+
 // '/pokemon' + '/pikachu'
-route.get('/:pokemonName', function(request, response) {
+route.get('/:pokemonName', function (request, response) {
 
     /* params = {
         pokemonName: 'pikachu'/'dinosaur',
@@ -56,7 +88,7 @@ route.get('/:pokemonName', function(request, response) {
 
     response.status(200);
 
-    for (let i = 0; i < pokemons.length; i++ ) {
+    for (let i = 0; i < pokemons.length; i++) {
         if (pokemons[i].name.toLowerCase() === nameOfPokemon.toLowerCase()) {
             return response.send(true);
 
